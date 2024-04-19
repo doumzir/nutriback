@@ -14,14 +14,126 @@ datasource db {
 }
 
 model User {
-  id    Int     @default(autoincrement()) @id
-  email String  @unique
-  password String 
-  userName String @unique
-  userType UserType
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  firstname String
+  lastname  String
+  userName  String   @unique
+  userType  UserType
+  coach     Coach?
+  sporty    Sporty?
 }
 
 enum UserType {
-  Coach
-  Sporty
+  COACH
+  SPORTY
+  ADMIN
+}
+
+model Coach {
+  id       Int             @id @default(autoincrement())
+  user     User            @relation(fields: [userId], references: [id])
+  userId   Int             @unique
+  proofUrl String
+  sports   SportHasCoach[]
+  programs Program[]
+}
+
+model Sporty {
+  id       Int                @id @default(autoincrement())
+  user     User               @relation(fields: [userId], references: [id])
+  userId   Int                @unique
+  sports   SportHasSporty[]
+  programs ProgramHasSporty[]
+}
+
+model Sport {
+  id      Int              @id @default(autoincrement())
+  name    String
+  coachs  SportHasCoach[]
+  sportys SportHasSporty[]
+}
+
+model SportHasCoach {
+  sport             Sport    @relation(fields: [sportId], references: [id])
+  sportId           Int
+  coach             Coach    @relation(fields: [coachId], references: [id])
+  coachId           Int
+  coachingStartDate DateTime
+
+  @@id([coachId, sportId])
+}
+
+model SportHasSporty {
+  sport             Sport    @relation(fields: [sportId], references: [id])
+  sportId           Int
+  sporty            Sporty   @relation(fields: [sportyId], references: [id])
+  sportyId          Int
+  practiseStartDate DateTime
+
+  @@id([sportId, sportyId])
+}
+
+model Program {
+  id       Int                  @id @default(autoincrement())
+  name     String
+  coach    Coach                @relation(fields: [coachId], references: [id])
+  coachId  Int
+  sportys  ProgramHasSporty[]
+  diet     Diet                 @relation(fields: [dietId], references: [id])
+  dietId   Int
+  exerices ProgramHasExercice[]
+}
+
+model ProgramHasSporty {
+  sporty    Sporty   @relation(fields: [sportyId], references: [id])
+  sportyId  Int
+  program   Program  @relation(fields: [programId], references: [id])
+  programId Int
+  startDate DateTime
+  duration  String
+
+  @@id([programId, sportyId])
+}
+
+model Diet {
+  id       Int              @id @default(autoincrement())
+  name     String
+  programs Program[]
+  aliments DietHasAliment[]
+}
+
+model Exercice {
+  id       Int                  @id @default(autoincrement())
+  name     String
+  duration String
+  programs ProgramHasExercice[]
+}
+
+model ProgramHasExercice {
+  program    Program  @relation(fields: [programId], references: [id])
+  programId  Int
+  exercice   Exercice @relation(fields: [exerciceId], references: [id])
+  exerciceId Int
+  startDate  DateTime
+
+  @@id([programId, exerciceId])
+}
+
+model Aliment {
+  id             Int              @id @default(autoincrement())
+  name           String
+  nutrimentValue Float
+  diets          DietHasAliment[]
+}
+
+model DietHasAliment {
+  diet      Diet    @relation(fields: [dietId], references: [id])
+  dietId    Int
+  aliment   Aliment @relation(fields: [alimentId], references: [id])
+  alimentId Int
+  quantity  Int
+
+  @@id([dietId, alimentId])
 }
