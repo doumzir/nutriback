@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { userWithoutPassword } from './userDto';
+import { UserWithoutPassword } from './userDto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -15,15 +16,21 @@ export class UserService {
     });
   }
 
-  async createUser(data: Prisma.UserCreateInput): Promise<userWithoutPassword> {
+  public async getUser(userName: string): Promise<User | null> {
+    return await this.prisma.user.findUnique({
+      where: { userName: userName },
+    });
+  }
+
+  async createUser(data: Prisma.UserCreateInput): Promise<UserWithoutPassword> {
+    //ToDo : Control password format
+    data.password = await bcrypt.hash(data.password, 10);
     const response = await this.prisma.user.create({ data });
-    const userWithoutPassword: userWithoutPassword = {
-      email: response.email,
-      firstname: response.firstname,
-      lastname: response.lastname,
-      userName: response.userName,
-      userType: response.userType,
-    };
+    const {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      password,
+      ...userWithoutPassword
+    }: { password: string } & UserWithoutPassword = response;
     return userWithoutPassword;
   }
 }
