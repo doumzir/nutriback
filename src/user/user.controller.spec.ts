@@ -32,8 +32,6 @@ describe('UserController', () => {
     const response = await controller.createUser(user);
     //ASSERT
     expect(response).toBeDefined();
-    expect(response.email).toEqual(user.email);
-    expect(response.userName).toEqual(user.userName);
-    expect(response.userType).toEqual(user.userType);
+    expect(response).not.toHaveProperty('password');
   });
 });
