@@ -15,7 +15,7 @@ describe('UserService', () => {
     }).compile();
 
     service = module.get<UserService>(UserService);
-    prisma = module.get<PrismaService>(PrismaService);
+    prisma = await module.resolve(PrismaService);
   });
 
   it('should be defined', () => {

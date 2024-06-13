@@ -1,12 +1,14 @@
 import { PrismaClient, UserType } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
+export const passwordTest = '123456789';
+
 export default async function userSeeds(prisma: PrismaClient) {
   await prisma.user.createMany({
     data: [
       {
         email: 'user1@example.com',
-        password: bcrypt.hashSync('123456', 10),
+        password: bcrypt.hashSync(passwordTest, 10),
         firstname: 'Michael',
         lastname: 'Jackson',
         userName: 'MJUserName',
@@ -14,7 +16,7 @@ export default async function userSeeds(prisma: PrismaClient) {
       },
       {
         email: 'user2@example.com',
-        password: bcrypt.hashSync('987654', 10),
+        password: bcrypt.hashSync(passwordTest, 10),
         firstname: 'Henry',
         lastname: 'Cavill',
         userName: 'Warhammer123',
@@ -22,7 +24,7 @@ export default async function userSeeds(prisma: PrismaClient) {
       },
       {
         email: 'user3@example.com',
-        password: bcrypt.hashSync('456123', 10),
+        password: bcrypt.hashSync(passwordTest, 10),
         firstname: 'Gordon',
         lastname: 'Freeman',
         userName: 'MysteriousGMan',
