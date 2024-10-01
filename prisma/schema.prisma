@@ -35,7 +35,7 @@ model Coach {
   id       Int             @id @default(autoincrement())
   user     User            @relation(fields: [userId], references: [id])
   userId   Int             @unique
-  proofUrl String
+  proofUrl String @db.Text // Utilisez Text pour stocker de grandes chaînes de caractères
   sports   SportHasCoach[]
   programs Program[]
 }

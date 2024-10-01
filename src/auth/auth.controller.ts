@@ -1,14 +1,22 @@
-import { Body, Controller, Post, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthService } from './auth.service';
-import { authSignIn } from './authDto';
+import { authSignUp } from './authDto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+	constructor(private authService: AuthService) {}
 
-  @HttpCode(HttpStatus.OK)
-  @Post('login')
-  signIn(@Body() signInDto: authSignIn) {
-    return this.authService.signIn(signInDto.userName, signInDto.password);
-  }
+	
+
+
+	@Post("register")
+	@UseInterceptors(FileInterceptor('diploma'))
+	async signUp(@Body() signUpDto: authSignUp, @UploadedFile() file: any) {
+		if (signUpDto.userType === 'COACH' && !file) {
+			throw new Error('Diploma is required for coaches');
+		}
+		const diplomaBuffer = file ? file.buffer : null;
+		return this.authService.signUp({ ...signUpDto, diplomaBuffer });
+	}
 }
